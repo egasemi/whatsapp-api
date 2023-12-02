@@ -1,5 +1,5 @@
-2023/12/02-16:17:31.762 43 Recovering log #6
-2023/12/02-16:17:31.786 43 Level-0 table #9: started
-2023/12/02-16:17:31.869 43 Level-0 table #9: 353 bytes OK
-2023/12/02-16:17:32.047 43 Delete type=3 #1
-2023/12/02-16:17:32.048 43 Delete type=0 #6
+2023/12/02-17:06:03.984 3c Recovering log #17
+2023/12/02-17:06:03.984 3c Level-0 table #19: started
+2023/12/02-17:06:03.988 3c Level-0 table #19: 233 bytes OK
+2023/12/02-17:06:04.001 3c Delete type=0 #17
+2023/12/02-17:06:04.001 3c Delete type=3 #15
