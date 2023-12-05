@@ -1,12 +1,19 @@
 const qrcode = require('qrcode-terminal')
-const { LocalAuth, Client } = require('whatsapp-web.js');
+const { LocalAuth, Client, RemoteAuth } = require('whatsapp-web.js');
+const { MongoStore } = require('wwebjs-mongo')
 const { onMsg } = require('../webhook');
 
 let clientWSP = null
 
-const initWSP = async () => {
+const initWSP = async (db) => {
+    const store = new MongoStore({ mongoose: db })
     clientWSP = new Client({
-        authStrategy: new LocalAuth(),
+
+        authStrategy: new RemoteAuth({
+            clientId: 'emi',
+            store: store,
+            backupSyncIntervalMs: 60000
+        }),
         puppeteer: {
             headless: true,
             args: [
@@ -24,6 +31,10 @@ const initWSP = async () => {
         console.log('auth ok')
     })
 
+    clientWSP.on('remote_session_saved', () => {
+        console.log('remote sesion saved')
+    })
+
     clientWSP.on('auth_failure', (msg) => {
         console.log(`auth error ${msg}`)
     })
@@ -37,18 +48,18 @@ const initWSP = async () => {
     });
 
     clientWSP.on('message', (msg) => {
-        onMsg(msg.from, msg.body)
+        console.log(msg)
     });
 
     await clientWSP.initialize();
 
 }
 
-const sendMsgWSP = async (number, message) => {
+const sendMsgWSP = async (number, message, options) => {
     try {
         number = number + '@c.us'
 
-        const response = await clientWSP.sendMessage(number, message)
+        const response = await clientWSP.sendMessage(number, message, options)
         return response
     } catch (error) {
         const messageError = `Error al enviar mensaje a ${number}`
@@ -57,4 +68,27 @@ const sendMsgWSP = async (number, message) => {
     }
 }
 
-module.exports = { initWSP, sendMsgWSP }
+const getChats = async () => {
+    try {
+        const response = await clientWSP.getChats()
+        return response
+    } catch (error) {
+        const messageError = `Error al obtener los chats`
+        console.error(messageError, error)
+        throw new Error(messageError)
+    }
+}
+
+const haveWSP = async (number) => {
+    try {
+        number = number + '@c.us'
+        const response = await clientWSP.isRegisteredUser(number)
+        return response
+    } catch (error) {
+        const messageError = `Error al enviar mensaje a ${number}`
+        console.error(messageError, error)
+        throw new Error(messageError)
+    }
+}
+
+module.exports = { initWSP, sendMsgWSP, getChats, haveWSP }

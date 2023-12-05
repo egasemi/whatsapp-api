@@ -45,7 +45,7 @@ RUN apt-get update && apt-get install -y \
     libgbm-dev \
     && rm -rf /var/lib/apt/lists/*
 
-RUN curl -sL https://deb.nodesource.com/setup_20.x | bash -
+RUN curl -sL https://deb.nodesource.com/setup_16.20.1 | bash -
 RUN apt-get install -y nodejs
 
 RUN mkdir -p /usr/src/app

@@ -1,10 +1,11 @@
 const { default: mongoose } = require("mongoose")
 
 const initDb = async () => {
-    const uri = process.env.MONGODB_URI || 'mongodb://localhost:27017/whatsapp'
+    const uri = process.env.MONGODB_URI
     try {
-        await mongoose.connect(uri)
+        await mongoose.connect(`${uri}/whatsapp`)
         console.log('DB connected')
+        return mongoose
     } catch (error) {
         const messageError = 'DB conection error'
         console.error(messageError, error)
