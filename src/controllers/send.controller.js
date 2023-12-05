@@ -1,17 +1,22 @@
-const { sendMsgWSP } = require("../config/wsp/initWSP")
+const { sendMsgWSP, haveWSP } = require("../config/wsp/initWSP")
 const { saveNewMessageService, updateSendedService, onErrorService } = require("../services/send.service")
 
 const sendController = async (req, res) => {
     const { number, message } = req.body
     try {
-        const messageDB = await saveNewMessageService(number, message)
-        const response = await sendMsgWSP(number, message)
+        const isRegistered = await haveWSP(number)
+        if (isRegistered) {
+            const messageDB = await saveNewMessageService(number, message)
+            const response = await sendMsgWSP(number, message)
 
-        if (response) {
-            await updateSendedService(messageDB._id, true)
-            res.send({ message: 'Mensaje enviado' })
+            if (response) {
+                await updateSendedService(messageDB._id, true)
+                res.send({ message: 'Mensaje enviado' })
+            } else {
+                res.send({ message: 'Mensaje no enviado' })
+            }
         } else {
-            res.send({ message: 'Mensaje no enviado' })
+            res.send({ message: 'No tiene whatsapp' })
         }
     } catch (error) {
         const errorController = `Error al enviar mensaje a ${number}`

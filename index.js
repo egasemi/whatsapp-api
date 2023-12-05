@@ -4,8 +4,8 @@ const { initWSP } = require('./src/config/wsp/initWSP.js')
 
     ; (async () => {
         try {
-            await initWSP()
-            await initDb()
+            const db = await initDb()
+            await initWSP(db)
             api.listen(3000, () => {
                 console.log(`server listen in port ${3000}`)
             })
